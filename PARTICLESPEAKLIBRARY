@@ -1,0 +1,28 @@
+#include <Grove-Ultrasonic-Ranger.h>
+#include <cmath>
+#include "ThingSpeak.h"
+
+Ultrasonic ultrasonic(4);
+
+unsigned long myChannelNumber = 2379160;    // replace with your channel number
+const char *myWriteAPIKey = "3JZ30FH3ONR1VBNC"; // replace with your channel's write API key
+
+TCPClient client;
+
+void setup() {
+  ThingSpeak.begin(client);
+  Serial.begin(9600);
+}
+
+void loop() {
+  long RangeInCentimeters;
+
+  Serial.println("The distance to obstacles in front is: ");
+
+  RangeInCentimeters = ultrasonic.MeasureInCentimeters();
+  Serial.print(RangeInCentimeters);
+  Serial.println(" cm");
+
+  ThingSpeak.writeField(myChannelNumber, 1, RangeInCentimeters, myWriteAPIKey);
+  delay(20000); // ThingSpeak will only accept updates every 15 seconds.
+}
